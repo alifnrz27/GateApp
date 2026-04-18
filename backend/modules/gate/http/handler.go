@@ -71,7 +71,7 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 	defer rpio.Close()
 
 	// 🔹 Setup pins (BCM mode default)
-	pinRelay := rpio.Pin(21)
+	pinRelay := rpio.Pin(22)
 
 	pinRelay.Output()
 
