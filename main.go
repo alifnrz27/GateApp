@@ -36,7 +36,6 @@ func main() {
 	if err != nil {
 		log.Println("GPIO init error:", err)
 	}
-	defer gpio.Close()
 
 	// ======================
 	// WAILS APP (FRONTEND)
