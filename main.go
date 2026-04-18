@@ -40,7 +40,7 @@ func main() {
 			port = "8006"
 		}
 
-		if err := app.Listen(port); err != nil {
+		if err := app.Listen(":", port); err != nil {
 			log.Fatal(err)
 		}
 	}()
