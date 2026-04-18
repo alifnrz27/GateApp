@@ -71,24 +71,17 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 	defer rpio.Close()
 
 	// 🔹 Setup pins (BCM mode default)
-	pin22 := rpio.Pin(22)
-	pin21 := rpio.Pin(21)
+	pinRelay := rpio.Pin(21)
 
-	pin22.Output()
-	pin21.Output()
+	pinRelay.Output()
 
 	fmt.Println("Starting relay cycle...")
 
 	for {
-		// 🔹 Relay 21 ON
-		pin21.High()
-		time.Sleep(1 * time.Second)
-		pin21.Low()
-
 		// 🔹 Relay 22 ON
-		pin22.High()
+		pinRelay.High()
 		time.Sleep(1 * time.Second)
-		pin22.Low()
+		pinRelay.Low()
 	}
 
 	gate, err := h.service.TriggerGate(req.GateUUID, req.Trigger)
