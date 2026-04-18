@@ -71,11 +71,9 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 	defer rpio.Close()
 
 	// 🔹 Setup pins (BCM mode default)
-	pin20 := rpio.Pin(20)
 	pin26 := rpio.Pin(26)
 	pin21 := rpio.Pin(21)
 
-	pin20.Output()
 	pin26.Output()
 	pin21.Output()
 
@@ -86,11 +84,6 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 		pin21.High()
 		time.Sleep(1 * time.Second)
 		pin21.Low()
-
-		// 🔹 Relay 20 ON
-		pin20.High()
-		time.Sleep(1 * time.Second)
-		pin20.Low()
 
 		// 🔹 Relay 26 ON
 		pin26.High()
