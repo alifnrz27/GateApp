@@ -1,64 +1,55 @@
 package main
 
 import (
+	"embed"
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
-	"github.com/gofiber/fiber/v2"
+	"GateApp/backend/config"
+
 	"github.com/joho/godotenv"
-
-	"GateApp/backend/gpio"
+	"github.com/wailsapp/wails/v2"
+	"github.com/wailsapp/wails/v2/pkg/options"
+	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
 )
 
-func main() {
-	// 🔹 Load ENV
-	_ = godotenv.Load()
+//go:embed all:frontend/dist
+var assets embed.FS
 
-	// 🔹 Init GPIO (sekali saja)
-	if err := gpio.Init(); err != nil {
-		log.Fatal("GPIO init error:", err)
+func main() {
+
+	// ======================
+	// HTTP SERVER (BACKGROUND)
+	// ======================
+	err := godotenv.Load()
+	if err != nil {
+		log.Println(".env file not found, using environment variables instead")
 	}
 
-	// 🔹 Fiber app
-	app := fiber.New()
+	// Connect to database
+	db := config.Connect()
 
-	// 🔹 Routes
-	app.Get("/trigger", func(c *fiber.Ctx) error {
-		err := gpio.TriggerRelay(17, 2)
-		if err != nil {
-			return c.Status(500).SendString(err.Error())
-		}
-		return c.SendString("Relay triggered")
+	// Start the application
+	config.Route(db)
+
+	// ======================
+	// WAILS APP (FRONTEND)
+	// ======================
+	app := &App{}
+
+	err = wails.Run(&options.App{
+		Title:     "Gate Control App",
+		Width:     1024,
+		Height:    768,
+		OnStartup: app.startup,
+		AssetServer: &assetserver.Options{
+			Assets: assets,
+		},
+		Bind: []interface{}{
+			app,
+		},
 	})
 
-	// 🔹 Graceful shutdown
-	go func() {
-		port := os.Getenv("APP_PORT")
-		if port == "" {
-			port = "8006"
-		}
-
-		if err := app.Listen(":" + port); err != nil {
-			log.Fatal(err)
-		}
-	}()
-
-	// 🔹 Handle CTRL+C
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-
-	<-quit
-	log.Println("Shutting down...")
-
-	// 🔹 Close GPIO
-	gpio.Close()
-
-	// 🔹 Shutdown Fiber
-	if err := app.Shutdown(); err != nil {
-		log.Println("Server shutdown error:", err)
+	if err != nil {
+		log.Fatal(err)
 	}
-
-	log.Println("Server exited")
 }
