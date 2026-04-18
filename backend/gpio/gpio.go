@@ -1,4 +1,3 @@
-// gpio/relay.go
 package gpio
 
 import (
@@ -10,7 +9,6 @@ import (
 
 var initialized = false
 
-// Init GPIO (WAJIB DIPANGGIL SEKALI)
 func Init() error {
 	if initialized {
 		return nil
@@ -24,15 +22,13 @@ func Init() error {
 	return nil
 }
 
-// Close GPIO (optional, saat shutdown)
 func Close() {
 	if initialized {
 		rpio.Close()
 	}
 }
 
-// Trigger relay (ACTIVE LOW)
-func TriggerRelay(pinNumber int, duration time.Duration) error {
+func TriggerRelay(pinNumber int, durationSeconds int) error {
 	if !initialized {
 		return fmt.Errorf("gpio not initialized")
 	}
@@ -40,17 +36,10 @@ func TriggerRelay(pinNumber int, duration time.Duration) error {
 	pin := rpio.Pin(pinNumber)
 	pin.Output()
 
-	// relay ON (active low)
+	// 🔥 ACTIVE LOW (ubah kalau perlu)
 	pin.Low()
-	time.Sleep(duration)
-
-	// relay OFF
+	time.Sleep(time.Duration(durationSeconds) * time.Second)
 	pin.High()
 
 	return nil
 }
-
-// func TriggerRelay(pinNumber int) error {
-// 	fmt.Println("Mock trigger relay (Windows), pin:", pinNumber)
-// 	return nil
-// }
