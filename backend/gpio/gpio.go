@@ -18,6 +18,8 @@ func Init() error {
 		return fmt.Errorf("failed to open gpio: %v", err)
 	}
 
+	fmt.Println("gpio opened")
+
 	initialized = true
 	return nil
 }
