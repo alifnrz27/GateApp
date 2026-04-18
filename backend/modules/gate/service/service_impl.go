@@ -6,7 +6,6 @@ import (
 	"GateApp/backend/models"
 	"GateApp/backend/modules/gate/repository"
 	"errors"
-	"time"
 )
 
 func NewGateService(repo repository.GateRepository) GateService {
@@ -42,7 +41,7 @@ func (s *gateService) TriggerGate(uuid string, trigger string) (*models.Gate, er
 		return nil, errors.New("Gate not found")
 	}
 
-	err = gpio.TriggerRelay(gate.Pin, 2*time.Second)
+	err = gpio.TriggerRelay(gate.Pin, 2)
 	if err != nil {
 		return nil, errors.New("Failed to trigger relay")
 	}

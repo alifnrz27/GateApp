@@ -6,7 +6,6 @@ import (
 	"GateApp/backend/modules/gate/validation"
 	"GateApp/backend/utils"
 	"fmt"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -55,7 +54,7 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 
 	fmt.Println("Trigger relay...")
 
-	err = gpio.TriggerRelay(17, 2*time.Second)
+	err = gpio.TriggerRelay(17, 2)
 	if err != nil {
 		fmt.Println("Trigger error:", err)
 		return nil
