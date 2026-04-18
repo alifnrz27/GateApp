@@ -1,9 +1,12 @@
 package http
 
 import (
+	"GateApp/backend/gpio"
 	"GateApp/backend/modules/gate/service"
 	"GateApp/backend/modules/gate/validation"
 	"GateApp/backend/utils"
+	"fmt"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -43,6 +46,22 @@ func (h *GateHandler) GetGateByUuid(c *fiber.Ctx) error {
 
 func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 
+	err := gpio.Init()
+	if err != nil {
+		fmt.Println("GPIO init error:", err)
+		return nil
+	}
+	defer gpio.Close()
+
+	fmt.Println("Trigger relay...")
+
+	err = gpio.TriggerRelay(17, 2*time.Second)
+	if err != nil {
+		fmt.Println("Trigger error:", err)
+		return nil
+	}
+
+	fmt.Println("Done")
 	req := new(validation.TriggerGateRequest)
 	if err := c.BodyParser(req); err != nil {
 		response := utils.APIResponse("Invalid request", fiber.StatusBadRequest, "error", nil)
