@@ -45,13 +45,6 @@ func (h *GateHandler) GetGateByUuid(c *fiber.Ctx) error {
 
 func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 
-	err := gpio.Init()
-	if err != nil {
-		fmt.Println("GPIO init error:", err)
-		return nil
-	}
-	defer gpio.Close()
-
 	fmt.Println("Trigger relay...")
 
 	err = gpio.TriggerRelay(17, 2)

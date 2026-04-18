@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"GateApp/backend/config"
+	"GateApp/backend/gpio"
 
 	"github.com/joho/godotenv"
 	"github.com/wailsapp/wails/v2"
@@ -30,6 +31,12 @@ func main() {
 
 	// Start the application
 	config.Route(db)
+
+	err = gpio.Init()
+	if err != nil {
+		log.Println("GPIO init error:", err)
+	}
+	defer gpio.Close()
 
 	// ======================
 	// WAILS APP (FRONTEND)
