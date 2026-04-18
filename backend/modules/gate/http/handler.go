@@ -44,15 +44,6 @@ func (h *GateHandler) GetGateByUuid(c *fiber.Ctx) error {
 }
 
 func (h *GateHandler) Trigger(c *fiber.Ctx) error {
-
-	fmt.Println("Trigger relay...")
-
-	err = gpio.TriggerRelay(17, 2)
-	if err != nil {
-		fmt.Println("Trigger error:", err)
-		return nil
-	}
-
 	fmt.Println("Done")
 	req := new(validation.TriggerGateRequest)
 	if err := c.BodyParser(req); err != nil {
@@ -69,6 +60,14 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		response := utils.APIResponse("Invalid request", fiber.StatusBadRequest, "error", nil)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
+	}
+
+	fmt.Println("Trigger relay...")
+
+	err := gpio.TriggerRelay(req.Relay, 2)
+	if err != nil {
+		fmt.Println("Trigger error:", err)
+		return nil
 	}
 
 	gate, err := h.service.TriggerGate(req.GateUUID, req.Trigger)

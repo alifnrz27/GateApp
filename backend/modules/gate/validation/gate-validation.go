@@ -11,6 +11,7 @@ var validate = validator.New()
 type TriggerGateRequest struct {
 	GateUUID string `json:"gate_uuid" validate:"required"`
 	Trigger  string `json:"trigger" validate:"required,oneof=open"`
+	Relay    int    `json:"relay"`
 }
 
 var validationMessages = map[string]string{
