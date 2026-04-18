@@ -31,17 +31,23 @@ func Close() {
 }
 
 func TriggerRelay(pinNumber int, durationSeconds int) error {
-	if !initialized {
-		return fmt.Errorf("gpio not initialized")
+	if err := rpio.Open(); err != nil {
+		fmt.Println("Failed to open GPIO:", err)
+		return nil
 	}
+	defer rpio.Close()
 
 	pin := rpio.Pin(pinNumber)
 	pin.Output()
 
-	// 🔥 ACTIVE LOW (ubah kalau perlu)
+	pin.High()
+	time.Sleep(time.Duration(durationSeconds) * time.Second)
+
+	// 🔥 OFF
 	pin.Low()
 	time.Sleep(time.Duration(durationSeconds) * time.Second)
-	pin.High()
+
+	fmt.Println("Selesai")
 
 	return nil
 }

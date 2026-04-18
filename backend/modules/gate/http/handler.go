@@ -5,10 +5,8 @@ import (
 	"GateApp/backend/modules/gate/validation"
 	"GateApp/backend/utils"
 	"fmt"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/stianeikeland/go-rpio/v4"
 )
 
 type GateHandler struct {
@@ -62,33 +60,6 @@ func (h *GateHandler) Trigger(c *fiber.Ctx) error {
 		response := utils.APIResponse("Invalid request", fiber.StatusBadRequest, "error", nil)
 		return c.Status(fiber.StatusBadRequest).JSON(response)
 	}
-
-	// 🔥 Open GPIO
-	if err := rpio.Open(); err != nil {
-		fmt.Println("Failed to open GPIO:", err)
-		return nil
-	}
-	defer rpio.Close()
-
-	// 🔹 Setup 1 pin (BCM 21)
-	pin := rpio.Pin(req.Relay)
-	pin.Output()
-
-	fmt.Println("Starting relay loop (10x)...")
-
-	for i := 0; i < 10; i++ {
-		fmt.Println("Trigger ke-", i+1)
-
-		// 🔥 ON (coba Low kalau relay tidak bunyi)
-		pin.High()
-		time.Sleep(1 * time.Second)
-
-		// 🔥 OFF
-		pin.Low()
-		time.Sleep(1 * time.Second)
-	}
-
-	fmt.Println("Selesai")
 
 	gate, err := h.service.TriggerGate(req.GateUUID, req.Trigger)
 	if err != nil {
