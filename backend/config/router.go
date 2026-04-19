@@ -86,5 +86,11 @@ func Route(db *gorm.DB) {
 	// ===============================
 	// RUN APP
 	// ===============================
-	log.Fatalln(app.Listen(":" + os.Getenv("PORT")))
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8006"
+	}
+
+	log.Println("Server running on port:", port)
+	log.Fatalln(app.Listen(":" + port))
 }
